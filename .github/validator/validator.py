@@ -114,6 +114,6 @@ if has_errors:
     print("Requested changes")
     sys.exit(1)
 else:
-    pr.create_review(body=body, event="APPROVE")
+    pr.create_review(body=body, event="COMMENT")
     print("Approved")
     sys.exit(0)
