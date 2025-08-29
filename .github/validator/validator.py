@@ -32,6 +32,16 @@ def list_changed_files_local_java():
                 changed.append(f.filename)
     return changed
 
+def list_all_local_java():
+    """Lista todos los archivos .java del repo (HEAD del PR ya está en checkout)."""
+    java_files = []
+    for root, _, files in os.walk("."):
+        for f in files:
+            if f.endswith(".java"):
+                java_files.append(os.path.join(root, f))
+    return java_files
+
+
 def has_any(text, needles):
     return any(n in text for n in needles)
 
@@ -59,7 +69,7 @@ if not service_name:
 observations = []
 
 # === Validación 1: Anotaciones Circuit Breaker en Java ===
-java_files = list_changed_files_local_java()
+java_files = list_all_local_java()
 missing_cb = []
 
 for path in java_files:
