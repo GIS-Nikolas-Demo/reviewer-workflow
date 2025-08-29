@@ -41,6 +41,7 @@ jobs:
       - name: List files to debug location of rules.yml
         run: |
           ls -R
+          ls -R ../
           ls -R .org-reviewer
       - name: Load rules
         id: rules
