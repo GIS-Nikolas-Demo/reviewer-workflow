@@ -75,7 +75,7 @@ jobs:
       - name: Run validator
         run: python reviewer-self/.github/validator/validator.py
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_ORG_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
           MICROSERVICE_NAME: ${{ inputs.microservice_name }}
