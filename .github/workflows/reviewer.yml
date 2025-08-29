@@ -33,15 +33,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Checkout reviewer-workflow (self)
+      - name: Checkout reviewer-workflow (central)
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository }}
+          repository: GIS-Nikolas-Demo/reviewer-workflow # <--- explícito
           path: reviewer-self
       - name: List files to debug location of rules.yml
         run: |
           ls -R
-          ls -R ../
           ls -R .org-reviewer
       - name: Load rules
         id: rules
