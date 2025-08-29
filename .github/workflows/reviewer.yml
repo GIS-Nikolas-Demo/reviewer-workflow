@@ -1,0 +1,82 @@
+﻿name: Org Reviewer (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      microservice_name:
+        description: "Nombre del microservicio (default: repo name)"
+        required: false
+        type: string
+      config_repo:
+        description: "Repo de configuración (override)"
+        required: false
+        type: string
+      rules_path:
+        description: "Ruta del rules.yml"
+        required: false
+        type: string
+        default: ".org-reviewer/rules.yml"
+    secrets:
+      GH_ORG_TOKEN:
+        required: true
+
+jobs:
+  org-reviewer:
+    name: org-reviewer
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout current repo (PR HEAD)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout reviewer-workflow (self)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          path: reviewer-self
+
+      - name: Load rules
+        id: rules
+        run: echo "RULES_PATH=${{ inputs.rules_path }}" >> $GITHUB_OUTPUT
+
+      - name: Parse rules to get config repo
+        id: parse
+        run: |
+          python - << 'PY'
+          import yaml, os, sys
+          p = os.environ.get("RULES_PATH",".org-reviewer/rules.yml")
+          with open(p, "r") as f:
+              y = yaml.safe_load(f)
+          print("::set-output name=cfgrepo::" + y.get("redis",{}).get("config_repo","org-configs"))
+          PY
+        env:
+          RULES_PATH: ${{ steps.rules.outputs.RULES_PATH }}
+
+      - name: Checkout config repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.config_repo || steps.parse.outputs.cfgrepo }}
+          path: config-repo
+          token: ${{ secrets.GH_ORG_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install PyGithub pyyaml
+
+      - name: Run validator
+        run: python reviewer-self/.github/validator/validator.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          MICROSERVICE_NAME: ${{ inputs.microservice_name }}
+          RULES_PATH: ${{ steps.rules.outputs.RULES_PATH }}
+          CONFIG_REPO_DIR: config-repo

@@ -1,0 +1,20 @@
+﻿java:
+  annotations_required_any:
+    - "@CircuitBreaker"
+    - "@Retry"
+    - "@RateLimiter"
+    - "@Bulkhead"
+    - "@TimeLimiter"
+  controller_markers:
+    - "@RestController"
+    - "@Controller"
+
+redis:
+  config_repo: "org-configs"
+  path_template: "redis-configs/{service}.yml"
+  required_keys:
+    - "spring.redis.host"
+    - "spring.redis.port"
+  optional_keys:
+    - "spring.redis.timeout"
+    - "spring.redis.password"
