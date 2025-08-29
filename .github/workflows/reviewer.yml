@@ -60,7 +60,7 @@ jobs:
       - name: Checkout config repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ inputs.config_repo || steps.parse.outputs.cfgrepo }}
+          repository: GIS-Nikolas-Demo/org-configs
           path: config-repo
           token: ${{ secrets.GH_ORG_TOKEN }}
 
