@@ -12,7 +12,7 @@ config_repo_dir = os.getenv("CONFIG_REPO_DIR", "config-repo")
 g = Github(token)
 repo = g.get_repo(repo_full)
 pr = repo.get_pull(pr_number)
-actor = g.get_user().login
+#actor = g.get_user().login
 
 # --- Utilidades ---
 def load_yaml_file(path):
