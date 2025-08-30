@@ -28,12 +28,19 @@ print("📦 Dependencias detectadas:", dependencies)
 # 2. Obtener configuraciones activas según dependencias
 rules_cfg = get_rules_for_dependencies(dependencies, rules_path)
 
+
+
 # 3. Definir qué validadores ejecutar (puede crecer dinámicamente después)
 # Registro de reglas disponibles
 RULES_REGISTRY = {
     "redis": RedisRule,
     # aquí en un futuro: "kafka": KafkaRule, "mysql": MysqlRule, etc.
 }
+
+print("dependencies:", dependencies)
+print("rules_cfg keys:", list(rules_cfg.keys()))
+print("RULES_REGISTRY keys:", list(RULES_REGISTRY.keys()))
+
 
 # 4. Seleccionar reglas dinámicamente en función de dependencias
 rules = [
