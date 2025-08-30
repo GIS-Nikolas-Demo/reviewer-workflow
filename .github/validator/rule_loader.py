@@ -13,7 +13,7 @@ def get_rules_for_dependencies(dependencies,rules_path):
                 data = yaml.safe_load(f)
                 rules = data.get(rule_key, {})
                 file_deps = rules.get("dependencies", [])
-                file_rules = rules.get("rules", {})
+                file_rules = rules.get("required_keys", {})
 
                 # Verifica si alguna dependencia coincide
                 if any(dep in file_deps for dep in dependencies):
