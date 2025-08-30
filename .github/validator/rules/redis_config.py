@@ -11,60 +11,34 @@ class RedisRule(ValidationRule):
         observations = []
         redis_rules = rules_cfg.get("redis", {})
         redis_path_template = redis_rules.get("path_template", "redis-configs/{service}.yml")
-        redis_required = redis_rules.get("required_keys", [])
+        required_keys = redis_rules.get("required_keys", [])
+        optional_keys = redis_rules.get("optional_keys", [])
 
         config_repo_dir = os.getenv("CONFIG_REPO_DIR", "config-repo")
-        redis_cfg_relpath = redis_path_template.replace("{service}", service_name)
-        redis_cfg_path = os.path.join(config_repo_dir, redis_cfg_relpath)
+        redis_cfg_path = os.path.join(config_repo_dir, redis_path_template.replace("{service}", service_name))
 
         if not os.path.exists(config_repo_dir):
-            observations.append("⚠️ **Redis**: No se pudo leer el repo de configuración (fork sin secretos).")
-        elif not os.path.exists(redis_cfg_path):
-            observations.append(f"❌ **Redis**: No existe `{redis_cfg_relpath}` en el repo de configuración.")
-        else:
-            try:
-                with open(redis_cfg_path, "r", encoding="utf-8") as f:
-                    cfg = yaml.safe_load(f)
+            observations.append("⚠️ No se pudo leer el repo de configuración.")
+            return observations
+        if not os.path.exists(redis_cfg_path):
+            observations.append(f"❌ No existe `{redis_cfg_path}`.")
+            return observations
 
-                missing_or_invalid = []
+        try:
+            with open(redis_cfg_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f)
 
-                for key_rule in redis_required:
-                    if isinstance(key_rule, str):
-                        # Caso antiguo: solo nombre de clave
-                        val = self._extract(cfg, key_rule)
-                        if val is None:
-                            missing_or_invalid.append(f"- `{key_rule}` (faltante)")
-                    else:
-                        dotted_key = key_rule.get("key")
-                        min_val = key_rule.get("min")
-                        max_val = key_rule.get("max")
-                        val = self._extract(cfg, dotted_key)
+            errors_required = self.validate_keys(cfg, required_keys)
+            if errors_required:
+                observations.append("❌ Problemas en claves obligatorias:\n" + "\n".join(errors_required))
+            else:
+                observations.append(f"✅ Claves obligatorias válidas en `{redis_cfg_path}`.")
 
-                        if val is None:
-                            missing_or_invalid.append(f"- `{dotted_key}` (faltante)")
-                        else:
-                            try:
-                                num_val = int(val)
-                                if min_val is not None and num_val < min_val:
-                                    missing_or_invalid.append(f"- `{dotted_key}`={num_val} < mínimo {min_val}")
-                                elif max_val is not None and num_val > max_val:
-                                    missing_or_invalid.append(f"- `{dotted_key}`={num_val} > máximo {max_val}")
-                            except Exception:
-                                missing_or_invalid.append(f"- `{dotted_key}` tiene valor no numérico: `{val}`")
+            errors_optional = self.validate_keys(cfg, optional_keys)
+            if errors_optional:
+                observations.append("⚠️ Problemas en claves opcionales:\n" + "\n".join(errors_optional))
 
-                if missing_or_invalid:
-                    observations.append("❌ **Redis**: Problemas en configuración:\n" + "\n".join(missing_or_invalid))
-                else:
-                    observations.append(f"✅ **Redis**: Configuración válida en `{redis_cfg_relpath}`.")
+        except Exception as e:
+            observations.append(f"⚠️ Error leyendo `{redis_cfg_path}`: {e}")
 
-            except Exception as e:
-                observations.append(f"⚠️ **Redis**: Error leyendo `{redis_cfg_relpath}`: {e}")
         return observations
-
-    def _extract(self, dct, dotted_key):
-        cur = dct
-        for k in dotted_key.split("."):
-            if not isinstance(cur, dict) or k not in cur:
-                return None
-            cur = cur[k]
-        return cur
