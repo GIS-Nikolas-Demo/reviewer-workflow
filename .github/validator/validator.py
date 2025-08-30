@@ -30,28 +30,29 @@ rules_cfg = get_rules_for_dependencies(dependencies, rules_path)
 
 
 
-# 3. Definir qué validadores ejecutar (puede crecer dinámicamente después)
-# Registro de reglas disponibles
+# 3. Registro de reglas disponibles
 RULES_REGISTRY = {
     "redis": RedisRule,
-    # aquí en un futuro: "kafka": KafkaRule, "mysql": MysqlRule, etc.
+    # en el futuro: "kafka": KafkaRule, "mysql": MysqlRule, etc.
 }
 
-# Seleccionar reglas dinámicamente según rules_cfg
+# 4. Seleccionar reglas dinámicamente según rules_cfg
 rules = [
-    RULES_REGISTRY[module]()  # solo crea la instancia
+    RULES_REGISTRY[module]()  # instancia vacía
     for module in rules_cfg
     if module in RULES_REGISTRY
 ]
+
 print("🛠️ Reglas aplicadas:", list(rules_cfg.keys()))
 print("📌 Instancias de reglas:", rules)
 
-# 5. Ejecutar cada regla especializada con su config
+# 5. Ejecutar cada regla especializada con **su propia configuración**
 observations = []
-# luego al ejecutar:
-for rule in rules:
-    obs = rule.run(repo, pr, service_name, rules_cfg)
+for module, rule in zip(rules_cfg.keys(), rules):
+    print(f"▶ Ejecutando regla: {rule.name}")
+    obs = rule.run(repo, pr, service_name, rules_cfg[module])  # solo config de su módulo
     observations.extend(obs)
+
 
 
 # --- Componer comentario ---
