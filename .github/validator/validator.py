@@ -33,13 +33,21 @@ print(rules_cfg)
 
 
 # 3. Definir qué validadores ejecutar (puede crecer dinámicamente después)
-rules = [
-    RedisRule()
-]
+# Registro de reglas disponibles
+RULES_REGISTRY = {
+    "redis": RedisRule,
+    # aquí en un futuro: "kafka": KafkaRule, "mysql": MysqlRule, etc.
+}
 
+# 4. Seleccionar reglas dinámicamente en función de dependencias
+rules = [
+    RULES_REGISTRY[dep](rules_cfg[dep])
+    for dep in dependencies
+    if dep in rules_cfg and dep in RULES_REGISTRY
+]
 observations = []
 
-# 4. Ejecutar cada regla especializada con su config
+# 5. Ejecutar cada regla especializada con su config
 for rule in rules:
     print(f"▶ Ejecutando regla: {rule.name}")
     obs = rule.run(repo, pr, service_name, rules_cfg)
