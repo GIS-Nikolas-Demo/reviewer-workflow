@@ -63,7 +63,7 @@ for file_name, file_rules in rules.items():
     print(f"\n🔧 Reglas: {file_rules}")
 
     # file_rules ya es un dict con listas: required_keys, optional_keys
-    for key_def in file_rules.get("required_keys", []):
+    for key_def in file_rules:
         key = key_def["key"]
         if key_def.get("required", False):
             # ejemplo de validación mínima
