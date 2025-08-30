@@ -65,21 +65,25 @@ print("📑 Archivos de reglas detectados:", rule_files)
 
 # 3. Seleccionar reglas dinámicamente según dependencias
 rules = get_rules_for_dependencies(dependencies)
-print("🛠️ Reglas activas:", [r.name for r in rules])
+print("🛠️ Reglas activas:", list(rules.keys()))  # ahora muestra por archivo
 
 observations = []
 
 # 4. Ejecutar cada regla contra su archivo de configuración
-for rule_file in rule_files:
-    module_name = os.path.basename(rule_file).replace("-rules.yml", "")
+for file_name, file_rules in rules.items():
+    module_name = file_name.replace("-rules.yml", "")
     print(f"\n🔧 Procesando módulo: {module_name}")
 
-    rules_cfg = load_yaml_file(rule_file)
+    for rule_name, rule_cfg in file_rules.items():
+        print(f"▶ Ejecutando regla: {rule_name} en módulo {module_name}")
 
-    for rule in rules:
-        print(f"▶ Ejecutando regla: {rule.name} en módulo {module_name}")
-        obs = rule.run(repo, pr, service_name, rules_cfg)
-        observations.extend(obs)
+        # Aquí la lógica de validación real: revisar required_keys / optional_keys
+        for key_def in rule_cfg.get("required_keys", []):
+            key = key_def["key"]
+            if key_def.get("required", False):
+                # ejemplo de validación mínima
+                observations.append(f"❌ Falta key obligatoria: {key} en {module_name}")
+
 
 
 # --- Componer comentario ---

@@ -1,6 +1,11 @@
 ﻿redis:
   config_repo: "org-configs"
   path_template: "redis-configs/{service}.yml"
+  dependencies:
+    - "org.springframework.boot:spring-boot-starter-data-redis"
+    - "org.springframework.boot:spring-boot-starter-data-redis-reactive"
+    - "io.lettuce.core:lettuce-core"
+    - "redis.clients:jedis"
   required_keys:
     - key: "spring.redis.host"
       type: "string"
