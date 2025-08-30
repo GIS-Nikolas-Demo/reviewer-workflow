@@ -51,7 +51,7 @@ rule_files = detect_rule_files(rules_path)
 print("📑 Archivos de reglas detectados:", rule_files)
 
 # 3. Seleccionar reglas dinámicamente según dependencias
-rules = get_rules_for_dependencies(dependencies)
+rules = get_rules_for_dependencies(dependencies,rules_path)
 print("🛠️ Reglas activas:", list(rules.keys()))  # ahora muestra por archivo
 
 observations = []
