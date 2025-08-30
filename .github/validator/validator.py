@@ -27,8 +27,6 @@ print("📦 Dependencias detectadas:", dependencies)
 
 # 2. Obtener configuraciones activas según dependencias
 rules_cfg = get_rules_for_dependencies(dependencies, rules_path)
-print("🛠️ Reglas activas:", {list(rules_cfg.keys())})
-
 
 # 3. Definir qué validadores ejecutar (puede crecer dinámicamente después)
 # Registro de reglas disponibles
