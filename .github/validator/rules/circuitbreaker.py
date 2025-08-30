@@ -18,6 +18,7 @@ class CircuitBreakerRule(ValidationRule):
                     java_files.append(os.path.join(root, f))
 
         missing_cb = []
+        print(f"▶ Archivos Java a escanear: {java_files}")
         for path in java_files:
             try:
                 with open(path, "r", encoding="utf-8") as f:
