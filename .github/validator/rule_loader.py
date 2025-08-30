@@ -17,5 +17,5 @@ def get_rules_for_dependencies(dependencies,rules_path):
                 # Verifica si alguna dependencia coincide
                 if any(dep in file_deps for dep in dependencies):
                     applied_rules[file_name] = data  # guardamos por archivo
-    print("🛠️ Reglas aplicadas:", list(applied_rules.keys()))  # muestra por archivo
+    print(f"\n🛠️ Reglas aplicadas: {applied_rules}")
     return applied_rules
