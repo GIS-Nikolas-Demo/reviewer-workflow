@@ -52,7 +52,7 @@ print("📑 Archivos de reglas detectados:", rule_files)
 
 # 3. Seleccionar reglas dinámicamente según dependencias
 rules = get_rules_for_dependencies(dependencies,rules_path)
-print("🛠️ Reglas activas:", list(rules.keys()))  # ahora muestra por archivo
+print("🛠️ Reglas activas:", rules.keys)  # ahora muestra por archivo
 
 observations = []
 
@@ -62,17 +62,14 @@ for file_name, file_rules in rules.items():
     print(f"\n🔧 Procesando módulo: {module_name}")
     print(f"\n🔧 Reglas: {file_rules}")
 
-    for rule_name, rule_cfg in file_rules.items():
-        print(f"▶ Ejecutando regla: {rule_name} en módulo {module_name}")
-
-        # Aquí la lógica de validación real: revisar required_keys / optional_keys
-        for key_def in rule_cfg.get("required_keys", []):
-            key = key_def["key"]
-            if key_def.get("required", False):
-                # ejemplo de validación mínima
-                observations.append(f"❌ Falta key obligatoria: {key} en {module_name}")
-
-
+    # file_rules ya es un dict con listas: required_keys, optional_keys
+    for key_def in file_rules.get("required_keys", []):
+        key = key_def["key"]
+        if key_def.get("required", False):
+            # ejemplo de validación mínima
+            observations.append(
+                f"❌ Falta key obligatoria: {key} en {module_name}"
+            )
 
 # --- Componer comentario ---
 header = "🔎 **Revisor de Organización – Reporte Automático**"
