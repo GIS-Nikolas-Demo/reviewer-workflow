@@ -4,10 +4,7 @@ class ValidationRule:
         self.name = name
 
     def run(self, repo, pr, service_name, rules_cfg):
-        """
-        Ejecuta la validación.
-        Debe retornar lista de observaciones (strings).
-        """
+        """Ejecuta la validación. Debe retornar lista de observaciones."""
         raise NotImplementedError
 
     # -------------------------
@@ -53,9 +50,14 @@ class ValidationRule:
 
         return None
 
-    def validate_keys(self, cfg, keys):
+    def validate_keys(self, cfg, keys_defs):
         """Valida un conjunto de claves y retorna lista de errores"""
-        return [e for e in (self.validate_key(k) for k in keys) if e]
+        errors = []
+        for key_def in keys_defs:
+            err = self.validate_key(cfg, key_def)
+            if err:
+                errors.append(err)
+        return errors
 
     def _extract(self, dct, dotted_key):
         """Extrae valor de dict anidado usando notación punto"""

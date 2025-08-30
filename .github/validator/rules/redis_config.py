@@ -15,6 +15,7 @@ class RedisRule(ValidationRule):
         optional_keys = redis_rules.get("optional_keys", [])
 
         config_repo_dir = os.getenv("CONFIG_REPO_DIR", "config-repo")
+        
         redis_cfg_path = os.path.join(config_repo_dir, redis_path_template.replace("{service}", service_name))
 
         if not os.path.exists(config_repo_dir):
