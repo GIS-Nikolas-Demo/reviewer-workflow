@@ -32,16 +32,24 @@ def load_yaml_file(path):
         return yaml.safe_load(f)
 
 def detect_rule_files(base_path):
-    """Detecta todos los archivos {modulo}-rules.yml en la carpeta .org-reviewer"""
+    """
+    Detecta archivos de reglas:
+      - Si base_path es un archivo .yml → lo retorna.
+      - Si base_path es un directorio → retorna todos los *-rules.yml o rules.yml.
+    """
     if not os.path.exists(base_path):
         return []
 
-    return [
-        os.path.join(base_path, f)
-        for f in os.listdir(base_path)
-        if f.endswith("-rules.yml")
-    ]
+    if os.path.isfile(base_path):
+        if base_path.endswith(".yml"):
+            return [base_path]
+        return []
 
+    rule_files = []
+    for f in os.listdir(base_path):
+        if f.endswith("-rules.yml") or f == "rules.yml":
+            rule_files.append(os.path.join(base_path, f))
+    return rule_files
 
 # --- Main ---
 if not service_name:
