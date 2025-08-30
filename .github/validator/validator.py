@@ -37,18 +37,15 @@ RULES_REGISTRY = {
     # aquí en un futuro: "kafka": KafkaRule, "mysql": MysqlRule, etc.
 }
 
-print("dependencies:", dependencies)
-print("rules_cfg keys:", list(rules_cfg.keys()))
-print("RULES_REGISTRY keys:", list(RULES_REGISTRY.keys()))
-
-
-# 4. Seleccionar reglas dinámicamente en función de dependencias
+# Seleccionar reglas dinámicamente según rules_cfg
 rules = [
-    RULES_REGISTRY[dep](rules_cfg[dep])
-    for dep in dependencies
-    if dep in rules_cfg and dep in RULES_REGISTRY
+    RULES_REGISTRY[module](rules_cfg[module])
+    for module in rules_cfg
+    if module in RULES_REGISTRY
 ]
-print(rules)
+
+print("🛠️ Reglas aplicadas:", list(rules_cfg.keys()))
+print("📌 Instancias de reglas:", rules)
 
 observations = []
 
