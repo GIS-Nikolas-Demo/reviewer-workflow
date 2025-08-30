@@ -48,13 +48,22 @@ jobs:
         id: parse
         run: |
           python - << 'PY'
-          import yaml, os
-          p = os.environ.get("RULES_PATH")
-          with open(p, "r") as f:
-              y = yaml.safe_load(f)
-          repo = y.get("redis",{}).get("config_repo","org-configs")
-          print(f"config repo -> {repo}")
-          print(f"::set-output name=cfgrepo::{repo}")
+          import os, yaml
+          from pathlib import Path
+
+          rules_dir = os.environ.get("RULES_PATH")
+          cfg_repo = "org-configs"
+
+          # Buscar el primer archivo de reglas que tenga config_repo definido
+          for f in Path(rules_dir).glob("*-rules.yml"):
+              y = yaml.safe_load(open(f))
+              for module, cfg in y.items():
+                  if isinstance(cfg, dict) and "config_repo" in cfg:
+                      cfg_repo = cfg["config_repo"]
+                      break
+
+          print(f"config repo -> {cfg_repo}")
+          print(f"::set-output name=cfgrepo::{cfg_repo}")
           PY
         env:
           RULES_PATH: ${{ steps.rules.outputs.RULES_PATH }}
