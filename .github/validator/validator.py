@@ -60,6 +60,7 @@ observations = []
 for file_name, file_rules in rules.items():
     module_name = file_name.replace("-rules.yml", "")
     print(f"\n🔧 Procesando módulo: {module_name}")
+    print(f"\n🔧 Reglas: {file_rules}")
 
     for rule_name, rule_cfg in file_rules.items():
         print(f"▶ Ejecutando regla: {rule_name} en módulo {module_name}")
