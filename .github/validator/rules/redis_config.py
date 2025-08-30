@@ -8,7 +8,13 @@ class RedisRule(ValidationRule):
 
     def run(self, repo, pr, service_name, rules_cfg):
         print(f"🔍 Ejecutando regla: {self.name}")
+        
         observations = []
+
+       # Título del bloque de observaciones
+        observations.append("🛠️ Validacion de reglas Redis")
+
+
         redis_rules = rules_cfg.get("redis", {})
         redis_path_template = redis_rules.get("path_template", "redis-configs/{service}.yml")
         required_keys = redis_rules.get("required_keys", [])

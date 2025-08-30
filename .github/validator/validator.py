@@ -44,7 +44,6 @@ rules = [
 ]
 
 print("🛠️ Reglas aplicadas:", list(rules_cfg.keys()))
-print("📌 Instancias de reglas:", rules)
 
 # 5. Ejecutar cada regla especializada con **su propia configuración**
 observations = []
