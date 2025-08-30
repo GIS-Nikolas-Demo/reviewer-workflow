@@ -10,7 +10,7 @@ class CircuitBreakerRule(ValidationRule):
         observations = []
         ann_required_any = rules_cfg.get("java", {}).get("annotations_required_any", [])
         controller_markers = rules_cfg.get("java", {}).get("controller_markers", [])
-
+        print(f"▶ Reglas: {ann_required_any}")
         java_files = []
         for root, _, files in os.walk("."):
             for f in files:

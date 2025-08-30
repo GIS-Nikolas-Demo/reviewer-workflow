@@ -13,8 +13,15 @@ redis:
   config_repo: "org-configs"
   path_template: "redis-configs/{service}.yml"
   required_keys:
+    # Redis nativo
     - "spring.redis.host"
     - "spring.redis.port"
+    # Redisson básico (modo single server)
+    - "spring.redis.redisson.config"
+    - "spring.redis.redisson.address"
+    - "spring.redis.redisson.connectionMinimumIdleSize"
+    - "spring.redis.redisson.connectionPoolSize"
+    - "spring.redis.redisson.timeout"
   optional_keys:
     - "spring.redis.timeout"
     - "spring.redis.password"
