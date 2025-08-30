@@ -27,8 +27,11 @@ def load_yaml_file(path):
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
+def load_yaml_file(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
-def detect_rule_files(base_path=".org-reviewer"):
+def detect_rule_files(base_path):
     """Detecta todos los archivos {modulo}-rules.yml en la carpeta .org-reviewer"""
     if not os.path.exists(base_path):
         return []
