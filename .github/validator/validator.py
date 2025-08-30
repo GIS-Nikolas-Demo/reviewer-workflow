@@ -1,11 +1,9 @@
 ﻿# validator.py
-import os, sys, yaml
+import os, sys, yaml, importlib
 from github import Github
 
-# --- Importar loaders ---
 from dependency_loader import get_dependencies_from_pom
 from rule_loader import get_rules_for_dependencies
-
 
 # --- GitHub Context ---
 token = os.getenv("GITHUB_TOKEN")
@@ -18,26 +16,6 @@ g = Github(token)
 repo = g.get_repo(repo_full)
 pr = repo.get_pull(pr_number)
 
-
-def load_yaml_file(path):
-    """Carga un archivo YAML y lo retorna como dict"""
-    if not os.path.exists(path):
-        print(f"⚠️ No se encontró archivo de reglas en: {path}")
-        return {}
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-def load_yaml_file(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-def detect_rule_files(base_path):
-    rule_files = []
-    for f in os.listdir(base_path):
-        if f.endswith("-rules.yml") or f == "rules.yml":
-            rule_files.append(os.path.join(base_path, f))
-    return rule_files
-
 # --- Main ---
 if not service_name:
     service_name = repo_full.split("/", 1)[1]
@@ -46,30 +24,32 @@ if not service_name:
 dependencies = get_dependencies_from_pom()
 print("📦 Dependencias detectadas:", dependencies)
 
-# 2. Detectar archivos de reglas disponibles
-rule_files = detect_rule_files(rules_path)
-print("📑 Archivos de reglas detectados:", rule_files)
-
-# 3. Seleccionar reglas dinámicamente según dependencias
-rules = get_rules_for_dependencies(dependencies,rules_path)
-print("🛠️ Reglas activas:", rules.keys)  # ahora muestra por archivo
+# 2. Seleccionar reglas dinámicamente según dependencias
+rules = get_rules_for_dependencies(dependencies, rules_path)
+print("🛠️ Reglas activas:", rules.keys())
 
 observations = []
 
-# 4. Ejecutar cada regla contra su archivo de configuración
+# 3. Ejecutar cada regla especializada
 for file_name, file_rules in rules.items():
     module_name = file_name.replace("-rules.yml", "")
     print(f"\n🔧 Procesando módulo: {module_name}")
-    print(f"\n🔧 Reglas: {file_rules}")
 
-    # file_rules ya es un dict con listas: required_keys, optional_keys
-    for key_def in file_rules:
-        key = key_def["key"]
-        if key_def.get("required", False):
-            # ejemplo de validación mínima
-            observations.append(
-                f"❌ Falta key obligatoria: {key} en {module_name}"
-            )
+    try:
+        # Import dinámico: .github/validator/rules/redis_config.py => rules.redis_config
+        rule_module = importlib.import_module(f".rules.{module_name}_config", package="validator")
+        rule_class = [cls for name, cls in rule_module.__dict__.items()
+                      if isinstance(cls, type) and cls.__name__.endswith("Rule")][0]
+
+        rule_instance = rule_class()
+        obs = rule_instance.run(repo, pr, service_name, {module_name: {"rules": file_rules}})
+        observations.extend(obs)
+
+    except ModuleNotFoundError:
+        print(f"⚠️ No se encontró implementación de regla para {module_name}, usando fallback.")
+        # Aquí podrías hacer una validación genérica mínima
+    except Exception as e:
+        observations.append(f"⚠️ Error ejecutando regla {module_name}: {e}")
 
 # --- Componer comentario ---
 header = "🔎 **Revisor de Organización – Reporte Automático**"
