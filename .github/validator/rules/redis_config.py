@@ -24,11 +24,38 @@ class RedisRule(ValidationRule):
             try:
                 with open(redis_cfg_path, "r", encoding="utf-8") as f:
                     cfg = yaml.safe_load(f)
-                missing_keys = [k for k in redis_required if not self._extract(cfg, k)]
-                if missing_keys:
-                    observations.append("❌ **Redis**: Faltan claves requeridas:\n" + "\n".join([f"- `{k}`" for k in missing_keys]))
+
+                missing_or_invalid = []
+
+                for key_rule in redis_required:
+                    if isinstance(key_rule, str):
+                        # Caso antiguo: solo nombre de clave
+                        val = self._extract(cfg, key_rule)
+                        if val is None:
+                            missing_or_invalid.append(f"- `{key_rule}` (faltante)")
+                    else:
+                        dotted_key = key_rule.get("key")
+                        min_val = key_rule.get("min")
+                        max_val = key_rule.get("max")
+                        val = self._extract(cfg, dotted_key)
+
+                        if val is None:
+                            missing_or_invalid.append(f"- `{dotted_key}` (faltante)")
+                        else:
+                            try:
+                                num_val = int(val)
+                                if min_val is not None and num_val < min_val:
+                                    missing_or_invalid.append(f"- `{dotted_key}`={num_val} < mínimo {min_val}")
+                                elif max_val is not None and num_val > max_val:
+                                    missing_or_invalid.append(f"- `{dotted_key}`={num_val} > máximo {max_val}")
+                            except Exception:
+                                missing_or_invalid.append(f"- `{dotted_key}` tiene valor no numérico: `{val}`")
+
+                if missing_or_invalid:
+                    observations.append("❌ **Redis**: Problemas en configuración:\n" + "\n".join(missing_or_invalid))
                 else:
                     observations.append(f"✅ **Redis**: Configuración válida en `{redis_cfg_relpath}`.")
+
             except Exception as e:
                 observations.append(f"⚠️ **Redis**: Error leyendo `{redis_cfg_relpath}`: {e}")
         return observations

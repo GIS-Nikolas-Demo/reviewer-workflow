@@ -13,15 +13,66 @@ redis:
   config_repo: "org-configs"
   path_template: "redis-configs/{service}.yml"
   required_keys:
-    # Redis nativo
-    - "spring.redis.host"
-    - "spring.redis.port"
-    # Redisson básico (modo single server)
-    - "spring.redis.redisson.config"
-    - "spring.redis.redisson.address"
-    - "spring.redis.redisson.connectionMinimumIdleSize"
-    - "spring.redis.redisson.connectionPoolSize"
-    - "spring.redis.redisson.timeout"
+    - key: "spring.redis.host"
+      type: "string"
+      required: true
+
+    - key: "spring.redis.port"
+      type: "int"
+      required: true
+      min: 1024
+      max: 65535
+
+    - key: "spring.redis.redisson.config"
+      type: "string"
+      required: true
+
+    - key: "spring.redis.redisson.address"
+      type: "string"
+      required: true
+
+    - key: "spring.redis.redisson.connectionMinimumIdleSize"
+      type: "int"
+      required: true
+      min: 1
+      max: 50
+
+    - key: "spring.redis.redisson.connectionPoolSize"
+      type: "int"
+      required: true
+      min: 10
+      max: 500
+
+    - key: "spring.redis.redisson.timeout"
+      type: "int"
+      required: true
+      min: 1000     # 1 segundo
+      max: 60000    # 1 minuto
+
   optional_keys:
-    - "spring.redis.timeout"
-    - "spring.redis.password"
+    - key: "spring.redis.timeout"
+      type: "int"
+      min: 1000
+      max: 30000
+
+    - key: "spring.redis.password"
+      type: "string"
+
+    - key: "spring.redis.redisson.username"
+      type: "string"
+
+    - key: "spring.redis.redisson.password"
+      type: "string"
+
+    - key: "spring.redis.redisson.ssl"
+      type: "bool"
+
+    - key: "spring.redis.redisson.threads"
+      type: "int"
+      min: 1
+      max: 64
+
+    - key: "spring.redis.redisson.nettyThreads"
+      type: "int"
+      min: 1
+      max: 64
