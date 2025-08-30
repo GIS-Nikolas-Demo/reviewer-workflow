@@ -39,21 +39,20 @@ RULES_REGISTRY = {
 
 # Seleccionar reglas dinámicamente según rules_cfg
 rules = [
-    RULES_REGISTRY[module](rules_cfg[module])
+    RULES_REGISTRY[module]()  # solo crea la instancia
     for module in rules_cfg
     if module in RULES_REGISTRY
 ]
-
 print("🛠️ Reglas aplicadas:", list(rules_cfg.keys()))
 print("📌 Instancias de reglas:", rules)
 
-observations = []
-
 # 5. Ejecutar cada regla especializada con su config
+observations = []
+# luego al ejecutar:
 for rule in rules:
-    print(f"▶ Ejecutando regla: {rule.name}")
     obs = rule.run(repo, pr, service_name, rules_cfg)
     observations.extend(obs)
+
 
 # --- Componer comentario ---
 header = "🔎 **Revisor de Organización – Reporte Automático**"
