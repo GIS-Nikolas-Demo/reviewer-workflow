@@ -55,7 +55,7 @@ for module, rule in zip(rules_cfg.keys(), rules):
 
 
 # --- Componer comentario ---
-header = "🔎 **Revisor de Organización – Reporte Automático**"
+header = "🔎 **Revisor Buenas Practicas y lineamiento - COE Ing de Sw **"
 body = header + "\n\n" + ("\n\n".join(observations) if observations else "✅ No se encontraron observaciones.")
 
 has_errors = any(obs.startswith("❌") for obs in observations)
