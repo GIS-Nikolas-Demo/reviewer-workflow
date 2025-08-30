@@ -6,7 +6,6 @@ RULES_PATH = ".org-reviewer"
 def get_rules_for_dependencies(dependencies):
     print("CWD:", os.getcwd())
     print("Files in CWD:", os.listdir("."))
-    
     applied_rules = {}
 
     for file_name in os.listdir(RULES_PATH):
