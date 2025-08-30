@@ -32,21 +32,6 @@ def load_yaml_file(path):
         return yaml.safe_load(f)
 
 def detect_rule_files(base_path):
-    print(base_path)
-    print("Files in CWD:", os.listdir("."))
-    """
-    Detecta archivos de reglas:
-      - Si base_path es un archivo .yml → lo retorna.
-      - Si base_path es un directorio → retorna todos los *-rules.yml o rules.yml.
-    """
-    if not os.path.exists(base_path):
-        return []
-
-    if os.path.isfile(base_path):
-        if base_path.endswith(".yml"):
-            return [base_path]
-        return []
-
     rule_files = []
     for f in os.listdir(base_path):
         if f.endswith("-rules.yml") or f == "rules.yml":

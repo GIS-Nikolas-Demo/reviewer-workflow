@@ -40,9 +40,9 @@ jobs:
         with:
           repository: GIS-Nikolas-Demo/reviewer-workflow # <--- explícito
           path: reviewer-self
-      - name: Load rules
+      - name: Load rules directory
         id: rules
-        run: echo "RULES_PATH=reviewer-self/.org-reviewer/rules.yml" >> $GITHUB_OUTPUT
+        run: echo "RULES_PATH=reviewer-self/.org-reviewer" >> $GITHUB_OUTPUT
 
       - name: Parse rules to get config repo
         id: parse
