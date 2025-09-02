@@ -16,6 +16,7 @@ class CircuitBreakerRule(ValidationRule):
         # --- 1) Validación de código Java (anotaciones en controladores) ---
         print(module_cfg)
         java_cfg = (module_cfg or {}).get("java", {})
+        print(java_cfg)
         controller_markers = java_cfg.get("controller_markers", [])
         annotations_required_any = java_cfg.get("annotations_required_any", [])
         exclude_globs = java_cfg.get("exclude_globs", [])
