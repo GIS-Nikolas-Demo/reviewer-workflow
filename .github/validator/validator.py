@@ -1,7 +1,14 @@
 ﻿# validator.py
 import os, sys, yaml
 from github import Github
-from rules.redis_config import RedisRule
+from rules.redis import RedisRule
+from rules.circuitbreaker import CircuitBreakerRule
+
+# Registro de reglas disponibles por módulo
+RULES_REGISTRY = {
+    "redis": RedisRule,
+    "circuitbreaker": CircuitBreakerRule,
+}
 
 from dependency_loader import get_dependencies_from_pom
 from rule_loader import get_rules_for_dependencies
@@ -28,13 +35,6 @@ print("📦 Dependencias detectadas:", dependencies)
 # 2. Obtener configuraciones activas según dependencias
 rules_cfg = get_rules_for_dependencies(dependencies, rules_path)
 
-
-
-# 3. Registro de reglas disponibles
-RULES_REGISTRY = {
-    "redis": RedisRule,
-    # en el futuro: "kafka": KafkaRule, "mysql": MysqlRule, etc.
-}
 
 # 4. Seleccionar reglas dinámicamente según rules_cfg
 rules = [

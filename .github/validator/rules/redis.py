@@ -1,5 +1,4 @@
-﻿# .github/validator/rules/redis_config.py
-import os, yaml
+﻿import os, yaml
 from .base import ValidationRule
 
 class RedisRule(ValidationRule):
@@ -7,7 +6,6 @@ class RedisRule(ValidationRule):
         super().__init__("Redis Config")
 
     def run(self, repo, pr, service_name, rules_cfg):
-        print(f"🔍 Ejecutando regla: {self.name}")
         
         observations = []
 

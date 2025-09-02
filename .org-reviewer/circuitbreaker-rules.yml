@@ -1,0 +1,48 @@
+﻿circuitbreaker:
+  # Dependencias que activan esta regla (se cruzan con pom.xml ya parseado)
+  dependencies:
+    - "io.github.resilience4j:resilience4j-spring-boot3"
+    - "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j"
+
+  # Validación de código Java
+  java:
+    controller_markers:
+      - "@RestController"
+      - "@Controller"
+    annotations_required_any:
+      - "@CircuitBreaker"
+      - "@TimeLimiter"
+      - "@Bulkhead"
+      - "@RateLimiter"
+      - "@Retry"
+
+    # Opcional: excluir paths (por si hay códigos de ejemplo o tests que no quieras marcar)
+    exclude_globs:
+      - "src/test/**"
+      - "**/generated/**"
+
+  # (Opcional) Validación de configuración YAML en repo de configs
+  # Si no usas un repo externo, elimina esta sección.
+  config_repo: "org-configs"
+  path_template: "circuitbreaker-configs/{service}.yml"
+
+  required_keys:
+    - key: "resilience4j.circuitbreaker.instances.default.failureRateThreshold"
+      type: "int"
+      required: true
+      min: 1
+      max: 100
+    - key: "resilience4j.circuitbreaker.instances.default.slidingWindowSize"
+      type: "int"
+      required: true
+      min: 10
+      max: 1000
+    - key: "resilience4j.timelimiter.instances.default.timeoutDuration"
+      type: "string"   # ej: "2s", "500ms"
+      required: false
+
+  optional_keys:
+    - key: "resilience4j.circuitbreaker.instances.default.permittedNumberOfCallsInHalfOpenState"
+      type: "int"
+      min: 1
+      max: 100
