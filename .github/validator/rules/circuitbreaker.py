@@ -14,6 +14,7 @@ class CircuitBreakerRule(ValidationRule):
         observations.append("🛠️ Validación de reglas Circuit Breaker")
 
         # --- 1) Validación de código Java (anotaciones en controladores) ---
+        print(module_cfg)
         java_cfg = (module_cfg or {}).get("java", {})
         controller_markers = java_cfg.get("controller_markers", [])
         annotations_required_any = java_cfg.get("annotations_required_any", [])
