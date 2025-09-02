@@ -18,7 +18,7 @@ class CircuitBreakerRule(ValidationRule):
         controller_markers = java_cfg.get("controller_markers", [])
         annotations_required_any = java_cfg.get("annotations_required_any", [])
         exclude_globs = java_cfg.get("exclude_globs", [])
-
+        print(annotations_required_any)
         missing_annotations = self._validate_java_annotations(
             controller_markers,
             annotations_required_any,
