@@ -17,8 +17,6 @@ def get_dependencies_from_pom(pom_path="pom.xml"):
             version = dep.find("mvn:version", ns)
 
             dep_str = f"{group_id.text if group_id is not None else ''}:{artifact_id.text if artifact_id is not None else ''}"
-            if version is not None:
-                dep_str += f":{version.text}"
             dependencies.append(dep_str.lower())
 
         return dependencies
